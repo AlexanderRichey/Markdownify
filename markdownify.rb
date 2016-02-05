@@ -17,6 +17,8 @@ class String
     output
   end
 
+  private
+
   def paragraph?(string)
     front_matter(string) == "" && string.start_with?("<p>") ? true : false
   end

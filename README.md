@@ -1,6 +1,6 @@
 #Markdownify
 
-This is a simple ruby script that converts HTML WordpressDotCom posts that have been imported with [Jekyll-Import](http://import.jekyllrb.com/docs/wordpressdotcom/) into Markdown. It renders only the following HTML elements in Markdown:
+This is a simple ruby script that converts HTML WordpressDotCom posts that have been imported with [Jekyll-Import](http://import.jekyllrb.com/docs/wordpressdotcom/) into Markdown. Its results are intended to be used in [Jekyll](http://jekyllrb.com/) websites and it renders only the following HTML elements in Markdown:
 
 * paragraphs
 * blockquotes
@@ -22,7 +22,7 @@ $ ruby markdownify.rb test_posts/post_1.html #=> post_1.md
 ```
 New `.md` files will be created alongside your old `.html` files. Be sure to check them for errors, since HTML made with Wordpress's web app is usually pretty messy.
 
-###Images, Other HTML Elements & Stuff
+####Images, Other HTML Elements & Stuff
 
 If there are images in any of your `.html` files, the line on which they occur will be rendered as `***THERE WAS AN IMAGE HERE***`. I did this because my blog posts usually don't have images. It would be pretty easy to make Markdownify support images, so, if you want to, fork it... or something.
 
