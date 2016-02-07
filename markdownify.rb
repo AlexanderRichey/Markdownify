@@ -4,84 +4,96 @@ class String
   def markdownify
     output = ""
 
-    if image?(self)
+    if image?
       output << "***THERE WAS AN IMAGE HERE***"
-    elsif paragraph?(self)
-      output << italics(links(paragraphs(self)))
-    elsif blockquote?(self)
-      output << italics(links(paragraphs(blockquotes(self))))
+    elsif paragraph?
+      output << self.paragraphs.links.italics
+    elsif blockquote?
+      output << self.blockquotes.paragraphs.links.italics
     else
-      output << front_matter(self)
+      output << self.front_matter
     end
 
     output
   end
 
-  private
-
-  def paragraph?(string)
-    front_matter(string) == "" && string.start_with?("<p>") ? true : false
+  def paragraph?
+    front_matter == "" && start_with?("<p>") ? true : false
   end
 
-  def blockquote?(string)
-    front_matter(string) == "" && string.start_with?("<blockquote>") ? true : false
+  def blockquote?
+    front_matter == "" && start_with?("<blockquote>") ? true : false
   end
 
-  def image?(string)
+  def image?
     n = 0
-    while n < string.length - 3
-      return true if string[n..(n + 3)] == "<img"
+    while n < self.length - 3
+      return true if self[n..(n + 3)] == "<img"
       n += 1
     end
     false
   end
 
-  def front_matter(string)
-    string.split.first == "---" || string.split.first == "layout:" || string.split.first == "title:" ? string : ""
+  def front_matter
+    self.split.first == "---" || self.split.first == "layout:" || self.split.first == "title:" ? self : ""
   end
 
-  def paragraphs(string)
-    string.gsub("<p>", "").gsub("</p>", "\n")
+  def paragraphs
+    gsub("<p>", "").gsub("</p>", "\n")
   end
 
-  def blockquotes(string)
-    string.gsub("<blockquote>", ">").gsub("</blockquote>", "")
+  def blockquotes
+    gsub("<blockquote>", ">").gsub("</blockquote>", "")
   end
 
-  def italics(string)
-    string.gsub(" <em>", " *").gsub("<em>", "*").gsub(" </em>", "* ").gsub("</em>", "*")
+  def italics
+    gsub(" <em>", " *").gsub("<em>", "*").gsub(" </em>", "* ").gsub("</em>", "*")
   end
 
-  def md_link(string)
-    url_start = string.index('<a href=') + 8
-    url_end = string.index('>', url_start) - 1
-    url = string[url_start..url_end]
+  def url_start
+    index('<a href=') + 9
+  end
 
-    linked_text_start = url_end + 2
-    linked_text_end = string.index('</a>', linked_text_start) - 1
-    linked_text = string[linked_text_start..linked_text_end]
+  def url_end
+    index('>', url_start) - 2
+  end
 
-    @link_start = url_start - 8
-    @link_end = linked_text_end + 4
+  def url
+    self[url_start..url_end]
+  end
 
+  def linked_text_start
+    url_end + 3
+  end
+
+  def linked_text_end
+    index('</a>', linked_text_start) - 1
+  end
+
+  def linked_text
+    self[linked_text_start..linked_text_end]
+  end
+
+  def html_link
+    link_start = url_start - 9
+    link_end = linked_text_end + 4
+    self[link_start..link_end]
+  end
+
+  def md_link
     "[#{linked_text}](#{url})"
   end
 
-  def links(string)
-    return string unless string.include?('<a href=')
+  def links
+    return self unless self.include?('<a href=')
 
-    new_link = md_link(string)
-    old_link = string[@link_start..@link_end]
-
-    new_string = string.sub(old_link, new_link)
-    links(new_string)
+    new_string = self.sub(html_link, md_link)
+    new_string.links
   end
 end
 
 if $PROGRAM_NAME == __FILE__
-  input_files = ARGV
-
-  input_files.each do |input|
+  ARGV.each do |input|
     post_name = input.sub(".html", ".md")
     new_file = File.open(post_name, "w")
 
