@@ -29,7 +29,3 @@ If there are images in any of your `.html` files, the line on which they occur w
 Other HTML elements will be either rendered as they are or not rendered at all - it depends on where they occur in the line.
 
 Also, if you want to keep your tags or something, just modify the #front_matter method and consider forking it.
-
-##Apology
-
-I've only been coding for a couple months, so be nice and thanks for reading!
